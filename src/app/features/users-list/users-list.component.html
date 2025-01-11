@@ -1,0 +1,80 @@
+<mat-toolbar class="d-flex header-container">
+    <h1>My Search App</h1>
+    <div class="user-list-header">
+        <div class="search-wrapper">
+            <mat-form-field appearance="fill">
+                <mat-label>Search Users</mat-label>
+                <input matInput [(ngModel)]="searchUsers.query" placeholder="Enter GitHub username or email" />
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="onSearch()">Search</button>
+        </div>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Sort by</mat-label>
+            <mat-select [(ngModel)]="searchUsers.sortBy" (selectionChange)="onSearch()">
+                <mat-option value="login">Username</mat-option>
+                <mat-option value="followers">Followers</mat-option>
+                <mat-option value="repositories">Repositories</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Filter by</mat-label>
+            <mat-select [(ngModel)]="searchUsers.filterBy" (selectionChange)="onSearch()">
+                <mat-option value="User">User</mat-option>
+                <mat-option value="Organization">Organization</mat-option>
+                <mat-option value="Enterprise">Enterprise</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</mat-toolbar>
+<div class="container">
+
+    <div class="user-list-container mt-4">
+        @if (loading$|async) {
+        <div class="loading">Loading...</div>
+        }
+        @else if (error$|async) {
+        }
+        @else {
+        <div class="user-cards">
+
+            @for (user of users$|async; track $index) {
+            <mat-card class="user-card p-2">
+                <mat-card-header>
+                    <div mat-card-avatar class="user-avatar"
+                        [ngStyle]="{'background-image': 'url(' + user.avatar_url + ')'}"></div>
+                    <mat-card-title>{{ user.login }}</mat-card-title>
+                    <mat-card-subtitle>{{user.company?'works at ' + user.company + ' company':'no company
+                        found'}}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-divider></mat-divider>
+                <mat-card-content class="mt-3">
+                    <p>{{user.bio?user.bio:'no bio found'}}
+                    </p>
+                    <p>Followers: {{ user.followers }}</p>
+                    <p>Repositories: {{ user.public_repos }}</p>
+                </mat-card-content>
+                <mat-card-actions class="d-flex justify-content-end">
+                    <button mat-flat-button color="primary" class="rounded"
+                        [routerLink]="['/'+routes.userDetails,user.login]">Details</button>
+                </mat-card-actions>
+            </mat-card>
+            }
+            @empty {
+            <div class="no-users">
+                <p>No users found</p>
+            </div>
+            }
+
+        </div>
+
+        }
+
+
+
+        <mat-paginator [length]="total$|async" [pageSize]="searchUsers.pageSize" [pageIndex]="pageIndex"
+            (page)="onPageChange($event)">
+        </mat-paginator>
+    </div>
+</div>

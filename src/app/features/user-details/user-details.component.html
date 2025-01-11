@@ -1,0 +1,67 @@
+<div class="row w-100 h-100">
+    <div class="col-3 user-details">
+        <mat-card class="user-card p-2 h-100 position-fixed">
+            @if (loading$|async) {
+            <div class="loading">Loading...</div>
+            }
+            @else if (error$|async) {
+            }
+            @else {
+            <mat-card-header>
+                <div mat-card-avatar class="user-avatar"
+                    [ngStyle]="{'background-image': 'url(' + (selectedUser$|async)!.avatar_url + ')'}"></div>
+                <mat-card-title>{{ (selectedUser$|async)!.login }}</mat-card-title>
+                <mat-card-subtitle>{{(selectedUser$|async)!.company?'works at ' + (selectedUser$|async)!.company + '
+                    company':'no company
+                    found'}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content class='mt-3'>
+                <p>{{(selectedUser$|async)!.bio?(selectedUser$|async)!.bio:'no bio found'}}
+                </p>
+                <p>Followers: {{ (selectedUser$|async)!.followers }}</p>
+                <p>Repositories: {{ (selectedUser$|async)!.public_repos }}</p>
+            </mat-card-content>
+            }
+        </mat-card>
+    </div>
+    <div class="col-9">
+        <div class="p-3">
+            <h2>Repositries</h2>
+            <div class="repositries">
+                @if (loading$|async) {
+                <div class="loading">Loading...</div>
+                }
+                @else if (error$|async) {
+                }
+                @else {
+                <div class="repo-cards">
+
+                    @for (repo of selectedUserRepositories$|async; track $index) {
+                    <mat-card class="repo-card">
+                        <mat-card-header>
+                            <mat-card-title>{{ repo.name }}</mat-card-title>
+                            <mat-card-subtitle>{{repo.visibility}}</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <p>{{repo.description?repo.description:'no description found'}}
+                            </p>
+                            <p>Default Branch: {{ repo.default_branch }}</p>
+                            <p>Watchers: {{ repo.watchers_count }}</p>
+                            <p>Forks: {{ repo.forks_count }}</p>
+                        </mat-card-content>
+                    </mat-card>
+                    }
+                    @empty {
+                    <div class="no-users">
+                        <p>No Repositries found</p>
+                    </div>
+                    }
+
+                </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
